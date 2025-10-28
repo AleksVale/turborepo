@@ -1,4 +1,5 @@
 import { Body, Controller, Post, Query } from '@nestjs/common';
+import { KiwifyWebhookPayloadDto } from '../../application/dtos/kiwify/kiwify-webhook-payload.dto';
 import type { WebhookSource } from '../../application/use-cases/webhook/process-webhook-event.use-case';
 import { ProcessWebhookEventUseCase } from '../../application/use-cases/webhook/process-webhook-event.use-case';
 
@@ -13,6 +14,13 @@ export class WebhookController {
     @Query('source') source: WebhookSource,
     @Body() event: any,
   ): Promise<void> {
-    await this.processWebhookEvent.execute(source, event);
+    if (source === 'kiwify') {
+      await this.processWebhookEvent.execute(
+        source,
+        event as KiwifyWebhookPayloadDto,
+      );
+    } else {
+      await this.processWebhookEvent.execute(source, event);
+    }
   }
 }

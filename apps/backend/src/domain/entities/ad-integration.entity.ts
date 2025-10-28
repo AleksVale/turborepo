@@ -1,8 +1,8 @@
 export type AdProvider = 'google_ads' | 'facebook_ads';
 
 export class AdIntegration {
-  id!: string;
-  userId!: string;
+  id!: number;
+  userId!: number;
   provider!: AdProvider;
   clientId!: string;
   clientSecret!: string;

@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import {
   AdIntegration,
   AdProvider,
-} from '../../../../domain/entities/ad-integration.entity';
-import { AdIntegrationRepository } from '../../../../domain/repositories/ad-integration.repository';
-import { PrismaService } from '../../../prisma/prisma.service';
+} from 'src/domain/entities/ad-integration.entity';
+import { AdIntegrationRepository } from 'src/domain/repositories/ad-integration.repository';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class PrismaAdIntegrationRepository extends AdIntegrationRepository {
@@ -13,8 +13,8 @@ export class PrismaAdIntegrationRepository extends AdIntegrationRepository {
   }
 
   async findByUserAndProvider(
-    userId: string,
-    provider: AdProvider
+    userId: number,
+    provider: AdProvider,
   ): Promise<AdIntegration | null> {
     const result = await this.prisma.adIntegration.findFirst({
       where: { userId, provider },

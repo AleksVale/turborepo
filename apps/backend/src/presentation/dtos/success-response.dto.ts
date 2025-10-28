@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger'
+import { ApiProperty } from '@nestjs/swagger';
 
 export class SuccessResponseDto<T> {
   @ApiProperty({
@@ -6,33 +6,33 @@ export class SuccessResponseDto<T> {
     example: '200',
     default: '200',
   })
-  code: string
+  code: string;
 
   @ApiProperty({
     description: 'Descriptive message of the operation result',
     example: 'Request processed successfully!',
     default: 'Requisição processada com sucesso!',
   })
-  message: string
+  message: string;
 
   @ApiProperty({
     description: 'Name of the service that processed the request',
     example: 'auth-service',
   })
-  service: string
+  service!: string;
 
   @ApiProperty({
     description: 'Response timestamp',
     example: '2025-03-20T15:30:45.123Z',
   })
-  eventDate: string
+  eventDate: string;
 
-  registers: T
+  registers!: T;
 
   constructor(partial: Partial<SuccessResponseDto<T>>) {
-    this.code = '200'
-    this.eventDate = new Date().toISOString()
-    Object.assign(this, partial)
-    this.message = partial.message ?? 'Requisição processada com sucesso!'
+    this.code = '200';
+    this.eventDate = new Date().toISOString();
+    Object.assign(this, partial);
+    this.message = partial.message ?? 'Requisição processada com sucesso!';
   }
 }

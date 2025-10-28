@@ -1,7 +1,3 @@
-import type {
-  CreateProductDto,
-  UpdateProductDto,
-} from '@my-monorepo/shared-types';
 import {
   Body,
   Controller,
@@ -24,6 +20,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import type { CreateProductDto, UpdateProductDto } from '@tcc/shared-types';
 import { ProductResponseDto } from '../../application/dtos/product-response.dto';
 import type { CreateProductUseCase } from '../../application/use-cases/products/create-product.use-case';
 import type { DeleteProductUseCase } from '../../application/use-cases/products/delete-product.use-case';
@@ -43,7 +40,7 @@ export class ProductController {
     private readonly getProductUseCase: GetProductUseCase,
     private readonly updateProductUseCase: UpdateProductUseCase,
     private readonly deleteProductUseCase: DeleteProductUseCase,
-    private readonly listProductsUseCase: ListProductsUseCase
+    private readonly listProductsUseCase: ListProductsUseCase,
   ) {}
 
   @Post()
@@ -61,7 +58,7 @@ export class ProductController {
   })
   async create(
     @Body() dto: CreateProductDto,
-    @CurrentUser('sub') userId: number
+    @CurrentUser('sub') userId: number,
   ): Promise<ControllerResponseDto<ProductResponseDto>> {
     const product = await this.createProductUseCase.execute(dto, userId);
 
@@ -95,10 +92,10 @@ export class ProductController {
   @ApiOkResponseDecorator(ProductResponseDto)
   async findAll(
     @Query('userId', ParseIntPipe) userId?: number,
-    @CurrentUser('sub') currentUserId?: number
+    @CurrentUser('sub') currentUserId?: number,
   ): Promise<ControllerResponseDto<ProductResponseDto[]>> {
     const products = await this.listProductsUseCase.execute(
-      userId || currentUserId
+      userId || currentUserId,
     );
 
     const response: ProductResponseDto[] = products.map((product) => ({
@@ -137,7 +134,7 @@ export class ProductController {
     description: 'Access denied',
   })
   async findOne(
-    @Param('id', ParseIntPipe) id: number
+    @Param('id', ParseIntPipe) id: number,
   ): Promise<ControllerResponseDto<ProductResponseDto>> {
     const product = await this.getProductUseCase.execute(id);
 
@@ -183,7 +180,7 @@ export class ProductController {
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateProductDto,
-    @CurrentUser('sub') userId: number
+    @CurrentUser('sub') userId: number,
   ): Promise<ControllerResponseDto<ProductResponseDto>> {
     const product = await this.updateProductUseCase.execute(id, dto, userId);
 
@@ -228,7 +225,7 @@ export class ProductController {
   })
   async remove(
     @Param('id', ParseIntPipe) id: number,
-    @CurrentUser('sub') userId: number
+    @CurrentUser('sub') userId: number,
   ): Promise<void> {
     await this.deleteProductUseCase.execute(id, userId);
   }

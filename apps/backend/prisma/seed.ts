@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import * as bcrypt from 'bcryptjs';
+import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
@@ -44,7 +44,7 @@ async function main() {
     const adminPassword = process.env.ADMIN_DEFAULT_PASSWORD;
     if (!adminPassword) {
       throw new Error(
-        'ADMIN_DEFAULT_PASSWORD environment variable is required'
+        'ADMIN_DEFAULT_PASSWORD environment variable is required',
       );
     }
 

@@ -1,4 +1,3 @@
-import type { CreateUserDto, UpdateUserDto } from '@my-monorepo/shared-types';
 import {
   Body,
   Controller,
@@ -20,6 +19,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import type { CreateUserDto, UpdateUserDto } from '@tcc/shared-types';
 import { UserResponseDto } from '../../application/dtos/users/user-response.dto';
 import { CreateUserUseCase } from '../../application/use-cases/users/create-user.use-case';
 import { DeleteUserUseCase } from '../../application/use-cases/users/delete-user.use-case';
@@ -42,7 +42,7 @@ export class UserController {
     private readonly getUserUseCase: GetUserUseCase,
     private readonly updateUserUseCase: UpdateUserUseCase,
     private readonly deleteUserUseCase: DeleteUserUseCase,
-    private readonly listUsersUseCase: ListUsersUseCase
+    private readonly listUsersUseCase: ListUsersUseCase,
   ) {}
 
   @Post()
@@ -64,7 +64,7 @@ export class UserController {
     description: 'Insufficient permissions',
   })
   async create(
-    @Body() dto: CreateUserDto
+    @Body() dto: CreateUserDto,
   ): Promise<ControllerResponseDto<UserResponseDto>> {
     const user = await this.createUserUseCase.execute(dto);
 
@@ -87,7 +87,7 @@ export class UserController {
   @ApiOperation({ summary: 'List all users (Admin only)' })
   @ApiOkResponseDecorator(PaginatedControllerResponseDto)
   async findAll(
-    @Query() query: PaginationQueryDto
+    @Query() query: PaginationQueryDto,
   ): Promise<PaginatedControllerResponseDto<UserResponseDto>> {
     const result = await this.listUsersUseCase.execute(query);
     return result;
@@ -117,7 +117,7 @@ export class UserController {
     description: 'Insufficient permissions',
   })
   async findOne(
-    @Param('id', ParseIntPipe) id: number
+    @Param('id', ParseIntPipe) id: number,
   ): Promise<ControllerResponseDto<UserResponseDto>> {
     const user = await this.getUserUseCase.execute({ id });
 
@@ -166,7 +166,7 @@ export class UserController {
   })
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() dto: UpdateUserDto
+    @Body() dto: UpdateUserDto,
   ): Promise<ControllerResponseDto<UserResponseDto>> {
     const user = await this.updateUserUseCase.execute({ id, ...dto });
 

@@ -1,0 +1,10 @@
+{
+  "git.inputValidationLength": 50,
+  "git.inputValidationSubjectLength": 50,
+  "git.branchValidationRegex": "^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)/[a-z0-9-]+$",
+  "github.copilot.chat.commitMessageGeneration.instructions": [
+    {
+      "text": "# Commit Message Rules (Conventional Commits + FiTEC)\n\n## Format\n```\n<type>(<scope>): <subject>\n\n<body>\n\n<footer>\n```\n\n## Rules\n1. **Subject line (title)**:\n   - Max 50 characters (STRICT)\n   - Format: `type(scope): subject`\n   - Lowercase after colon\n   - No period at end\n   - Imperative mood (\"add\" not \"added\")\n\n2. **Types** (required):\n   - feat: New feature\n   - fix: Bug fix\n   - docs: Documentation only\n   - style: Code style (formatting, no logic change)\n   - refactor: Code refactoring\n   - perf: Performance improvement\n   - test: Adding/updating tests\n   - chore: Maintenance (deps, config)\n   - ci: CI/CD changes\n   - build: Build system changes\n   - revert: Revert previous commit\n\n3. **Scope** (optional but recommended):\n   - Module/feature name in parentheses\n   - Examples: (auth), (mqtt), (battery), (cardio)\n\n4. **Body** (optional):\n   - Max 100 characters per line\n   - Blank line after subject\n   - Explain WHAT and WHY (not HOW)\n   - Use bullet points with \"-\" or \"*\"\n\n5. **Footer** (optional):\n   - Breaking changes: `BREAKING CHANGE: description`\n   - Issues: `Closes #123`, `Fixes #456`\n\n## Examples\n\n### ✅ Good\n```\nfeat(mqtt): add firmware version reporting\n\nfix(battery): correct alert threshold calculation\n\nrefactor(location): use pagination helpers\n- Replace manual skip/take calculations\n- Add EquipmentOrganizationRepository method\n\ndocs: add Event Sourcing architecture guide\n```\n\n### ❌ Bad\n```\nAdded new feature for processing firmware versions from MQTT messages (TOO LONG)\n\nUpdate code (vague, no type/scope)\n\nfixed bug. (wrong format, period at end)\n```\n\n## CRITICAL\n- Subject MUST be ≤50 chars\n- Body lines MUST be ≤100 chars\n- Use present tense imperative\n- Be concise and specific\n"
+    }
+  ]
+}

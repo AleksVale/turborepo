@@ -5,13 +5,13 @@ import { ProcessWebhookEventUseCase } from '../../application/use-cases/webhook/
 @Controller('webhook')
 export class WebhookController {
   constructor(
-    private readonly processWebhookEvent: ProcessWebhookEventUseCase
+    private readonly processWebhookEvent: ProcessWebhookEventUseCase,
   ) {}
 
   @Post()
   async handleWebhook(
     @Query('source') source: WebhookSource,
-    @Body() event: any
+    @Body() event: any,
   ): Promise<void> {
     await this.processWebhookEvent.execute(source, event);
   }

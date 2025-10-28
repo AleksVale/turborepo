@@ -1,15 +1,26 @@
+enum AdProvider {
+    google_ads
+    facebook_ads
+}
+
+enum AdIntegrationStatus {
+    active
+    inactive
+    error
+}
+
 model AdIntegration {
-    id           Int       @id @default(autoincrement())
-    userId       Int       @map("user_id")
-    provider     String    @db.VarChar(50)
-    clientId     String    @db.VarChar(255)
-    clientSecret String    @db.VarChar(255)
-    accessToken  String    @db.Text
-    refreshToken String    @db.Text
+    id           Int                 @id @default(autoincrement())
+    userId       Int                 @map("user_id")
+    provider     AdProvider
+    clientId     String              @db.VarChar(255)
+    clientSecret String              @db.VarChar(255)
+    accessToken  String              @db.Text
+    refreshToken String              @db.Text
     expiresAt    DateTime?
-    status       String    @db.VarChar(20)
-    createdAt    DateTime  @default(now()) @map("created_at")
-    updatedAt    DateTime  @updatedAt @map("updated_at")
+    status       AdIntegrationStatus
+    createdAt    DateTime            @default(now()) @map("created_at")
+    updatedAt    DateTime            @updatedAt @map("updated_at")
 
     user User @relation(fields: [userId], references: [id])
 

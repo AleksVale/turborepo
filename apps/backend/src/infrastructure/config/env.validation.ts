@@ -29,7 +29,7 @@ export function validateEnv(config: Record<string, unknown>): EnvVars {
   const result = envSchema.safeParse(config);
 
   if (!result.success) {
-    const formatted = result.error.errors
+    const formatted = result.error.issues
       .map((issue) => `${issue.path.join('.') || 'root'}: ${issue.message}`)
       .join('; ');
     throw new Error(`Invalid environment configuration: ${formatted}`);

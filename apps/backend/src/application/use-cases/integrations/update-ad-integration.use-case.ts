@@ -6,8 +6,8 @@ import {
 import { AdIntegrationRepository } from '../../../domain/repositories/ad-integration.repository';
 
 export interface UpdateAdIntegrationInput {
-  id: string;
-  userId: string;
+  id: number;
+  userId: number;
   provider: AdProvider;
   clientId: string;
   clientSecret: string;

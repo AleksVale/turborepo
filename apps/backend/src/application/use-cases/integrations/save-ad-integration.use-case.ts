@@ -6,7 +6,7 @@ import {
 import { AdIntegrationRepository } from '../../../domain/repositories/ad-integration.repository';
 
 export interface SaveAdIntegrationInput {
-  userId: string;
+  userId: number;
   provider: AdProvider;
   clientId: string;
   clientSecret: string;

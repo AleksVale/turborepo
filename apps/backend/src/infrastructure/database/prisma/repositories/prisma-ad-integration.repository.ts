@@ -33,7 +33,7 @@ export class PrismaAdIntegrationRepository extends AdIntegrationRepository {
     });
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(id: number): Promise<void> {
     await this.prisma.adIntegration.delete({ where: { id } });
   }
 }

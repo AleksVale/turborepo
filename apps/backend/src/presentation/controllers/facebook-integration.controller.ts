@@ -9,15 +9,15 @@ export class FacebookIntegrationController {
   constructor(
     private readonly configService: ConfigService<EnvVars, true>,
     @Inject(SaveAdIntegrationUseCase)
-    private readonly saveAdIntegration: SaveAdIntegrationUseCase
+    private readonly saveAdIntegration: SaveAdIntegrationUseCase,
   ) {}
 
   @Get('initiate')
   initiateOAuth(@Req() req: Request, @Res() res: Response) {
-    const clientId = this.configService.get('FACEBOOK_CLIENT_ID');
-    const redirectUri = this.configService.get('FACEBOOK_REDIRECT_URI');
+    const clientId: string = this.configService.get('FACEBOOK_CLIENT_ID');
+    const redirectUri: string = this.configService.get('FACEBOOK_REDIRECT_URI');
     const scope = 'ads_management,ads_read,business_management';
-    const state = 'secureRandomState'; // ideal: gerar por usuário/sessão
+    const state = 'secureRandomState';
     const authUrl =
       `https://www.facebook.com/v19.0/dialog/oauth?` +
       `client_id=${clientId}` +
@@ -30,13 +30,15 @@ export class FacebookIntegrationController {
   @Get('callback')
   async handleCallback(@Req() req: Request, @Res() res: Response) {
     const code = req.query.code as string;
-    const clientId = this.configService.get('FACEBOOK_CLIENT_ID');
-    const clientSecret = this.configService.get('FACEBOOK_CLIENT_SECRET');
-    const redirectUri = this.configService.get('FACEBOOK_REDIRECT_URI');
+    const clientId: string = this.configService.get('FACEBOOK_CLIENT_ID');
+    const clientSecret: string = this.configService.get(
+      'FACEBOOK_CLIENT_SECRET',
+    );
+    const redirectUri: string = this.configService.get('FACEBOOK_REDIRECT_URI');
 
     // Troca o code por access_token
     const tokenUrl = `https://graph.facebook.com/v19.0/oauth/access_token?client_id=${clientId}&redirect_uri=${encodeURIComponent(
-      redirectUri ?? ''
+      redirectUri ?? '',
     )}&client_secret=${clientSecret}&code=${code}`;
     const tokenRes = await fetch(tokenUrl);
     const tokenData = (await tokenRes.json()) as {
@@ -44,11 +46,9 @@ export class FacebookIntegrationController {
       token_type: string;
       expires_in: number;
     };
-    // tokenData: { access_token, token_type, expires_in }
-
-    // Exemplo: userId fixo, ajuste para pegar do usuário autenticado
+    // TODO: userId fixo, ajuste para pegar do usuário autenticado
     await this.saveAdIntegration.execute({
-      userId: '1',
+      userId: 1,
       provider: 'facebook_ads',
       clientId: clientId ?? '',
       clientSecret: clientSecret ?? '',

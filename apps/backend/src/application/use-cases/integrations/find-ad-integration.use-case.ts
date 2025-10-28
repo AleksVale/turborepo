@@ -10,8 +10,8 @@ export class FindAdIntegrationUseCase {
   constructor(private readonly repository: AdIntegrationRepository) {}
 
   async execute(
-    userId: string,
-    provider: AdProvider
+    userId: number,
+    provider: AdProvider,
   ): Promise<AdIntegration | null> {
     return this.repository.findByUserAndProvider(userId, provider);
   }

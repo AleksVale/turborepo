@@ -1,4 +1,4 @@
-import { Controller, Get, Inject, Req, Res } from '@nestjs/common';
+import { Controller, Get, Req, Res } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { Request, Response } from 'express';
 import { SaveAdIntegrationUseCase } from '../../application/use-cases/integrations/save-ad-integration.use-case';
@@ -8,14 +8,15 @@ import { EnvVars } from '../../infrastructure/config/env.validation';
 export class GoogleIntegrationController {
   constructor(
     private readonly configService: ConfigService<EnvVars, true>,
-    @Inject(SaveAdIntegrationUseCase)
-    private readonly saveAdIntegration: SaveAdIntegrationUseCase
+    private readonly saveAdIntegration: SaveAdIntegrationUseCase,
   ) {}
 
   @Get('initiate')
   initiateOAuth(@Req() req: Request, @Res() res: Response) {
-    const clientId = this.configService.get('GOOGLE_ADS_CLIENT_ID');
-    const redirectUri = this.configService.get('GOOGLE_ADS_REDIRECT_URI');
+    const clientId: string = this.configService.get('GOOGLE_ADS_CLIENT_ID');
+    const redirectUri: string = this.configService.get(
+      'GOOGLE_ADS_REDIRECT_URI',
+    );
     const scope = [
       'https://www.googleapis.com/auth/adwords',
       'openid',
@@ -38,9 +39,13 @@ export class GoogleIntegrationController {
   @Get('callback')
   async handleCallback(@Req() req: Request, @Res() res: Response) {
     const code = req.query.code as string;
-    const clientId = this.configService.get('GOOGLE_ADS_CLIENT_ID');
-    const clientSecret = this.configService.get('GOOGLE_ADS_CLIENT_SECRET');
-    const redirectUri = this.configService.get('GOOGLE_ADS_REDIRECT_URI');
+    const clientId: string = this.configService.get('GOOGLE_ADS_CLIENT_ID');
+    const clientSecret: string = this.configService.get(
+      'GOOGLE_ADS_CLIENT_SECRET',
+    );
+    const redirectUri: string = this.configService.get(
+      'GOOGLE_ADS_REDIRECT_URI',
+    );
     // Troca o code por access_token e refresh_token
     const tokenUrl = 'https://oauth2.googleapis.com/token';
     const body = new URLSearchParams({
@@ -65,7 +70,7 @@ export class GoogleIntegrationController {
     };
     // Exemplo: userId fixo, ajuste para pegar do usuário autenticado
     await this.saveAdIntegration.execute({
-      userId: '1',
+      userId: 1,
       provider: 'google_ads',
       clientId: clientId ?? '',
       clientSecret: clientSecret ?? '',

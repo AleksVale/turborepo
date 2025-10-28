@@ -7,5 +7,5 @@ export abstract class AdIntegrationRepository {
   ): Promise<AdIntegration | null>;
   abstract save(integration: AdIntegration): Promise<void>;
   abstract update(integration: AdIntegration): Promise<void>;
-  abstract delete(id: string): Promise<void>;
+  abstract delete(id: number): Promise<void>;
 }

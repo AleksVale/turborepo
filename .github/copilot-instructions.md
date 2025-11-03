@@ -471,8 +471,112 @@ const { login, isLoginLoading, loginError } = useAuth();
 - **shadcn/ui** for UI components
 - **Tailwind CSS** for styling
 - **Lucide React** for icons
+- **React Hook Form** for form state management
+- **Zod** for schema validation
 
-### 🚫 Frontend Anti-Patterns
+### � Form Management with React Hook Form + Zod
+
+**MANDATORY form pattern:**
+
+1. **Validation Schema** - Create in `routes/<route-name>/validation.ts`
+2. **useForm Hook** - Manage form state with React Hook Form
+3. **Zod Resolver** - Validate with `zodResolver`
+4. **shadcn/ui Form** - Use Form components for consistency
+
+#### Form Structure Example:
+
+```typescript
+// ✅ CORRECT - app/routes/login/validation.ts
+import { z } from "zod";
+
+export const loginSchema = z.object({
+  email: z.string().min(1, "E-mail é obrigatório").email("E-mail inválido"),
+  password: z
+    .string()
+    .min(1, "Senha é obrigatória")
+    .min(6, "A senha deve ter no mínimo 6 caracteres"),
+  rememberMe: z.boolean().default(false),
+});
+
+export type LoginFormData = z.infer<typeof loginSchema>;
+```
+
+```tsx
+// ✅ CORRECT - app/routes/login.tsx
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "~/components/ui/form";
+import { loginSchema, type LoginFormData } from "./login/validation";
+
+export default function LoginPage() {
+  const form = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      rememberMe: false,
+    },
+  });
+
+  const onSubmit = async (data: LoginFormData) => {
+    // Handle form submission
+  };
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>E-mail</FormLabel>
+              <FormControl>
+                <Input type="email" placeholder="seu@email.com" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit">Enviar</Button>
+      </form>
+    </Form>
+  );
+}
+```
+
+**Form Rules:**
+
+- ✅ Always create validation schema in `routes/<route-name>/validation.ts`
+- ✅ Use Zod for all form validations
+- ✅ Use `zodResolver` to integrate with React Hook Form
+- ✅ Use shadcn/ui `Form` components (`FormField`, `FormItem`, `FormLabel`, `FormControl`, `FormMessage`)
+- ✅ Export types with `z.infer<typeof schema>`
+- ✅ Use descriptive error messages in Portuguese for user-facing forms
+- ❌ Never use uncontrolled forms or manual `useState` for form data
+- ❌ Never mix validation libraries (only Zod)
+- ❌ Never put validation schemas inside route files
+
+**Validation Schema Location:**
+
+```
+app/routes/
+├── login/
+│   └── validation.ts     # Login form schema
+├── login.tsx
+├── register/
+│   └── validation.ts     # Register form schema
+└── register.tsx
+```
+
+### �🚫 Frontend Anti-Patterns
 
 ❌ **NEVER do these:**
 
@@ -482,6 +586,9 @@ const { login, isLoginLoading, loginError } = useAuth();
 - Hardcode API URLs (use `API_ENDPOINTS`)
 - Hardcode Tailwind colors (use shadcn variables)
 - Mix business logic with UI rendering
+- Use `useState` for form data (use React Hook Form)
+- Create validation schemas inside route files
+- Mix validation libraries (only Zod)
 
 ### 📚 Reference Documentation
 

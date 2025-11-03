@@ -34,29 +34,29 @@ VITE_API_URL=http://localhost:3000
 ### 1. API Client Direto
 
 ```typescript
-import { apiClient, API_ENDPOINTS } from '~/lib/http';
+import { apiClient, API_ENDPOINTS } from "~/lib/http";
 
 // GET request
-const data = await apiClient.get('/users');
+const data = await apiClient.get("/users");
 
 // POST request
-const response = await apiClient.post('/auth/login', {
-  email: 'user@example.com',
-  password: 'password123',
+const response = await apiClient.post("/auth/login", {
+  email: "user@example.com",
+  password: "password123",
 });
 ```
 
 ### 2. Usando Serviços
 
 ```typescript
-import { authService } from '~/services/auth.service';
-import { userService } from '~/services/user.service';
-import { productService } from '~/services/product.service';
+import { authService } from "~/services/auth.service";
+import { userService } from "~/services/user.service";
+import { productService } from "~/services/product.service";
 
 // Login
 const { data } = await authService.login({
-  email: 'user@example.com',
-  password: 'password123',
+  email: "user@example.com",
+  password: "password123",
 });
 
 // Listar usuários
@@ -64,8 +64,8 @@ const users = await userService.list(1, 10);
 
 // Criar produto
 const product = await productService.create({
-  name: 'Produto Teste',
-  price: 99.90,
+  name: "Produto Teste",
+  price: 99.9,
 });
 ```
 
@@ -140,7 +140,7 @@ O cliente HTTP gerencia automaticamente:
 ### Métodos de Autenticação
 
 ```typescript
-import { authService } from '~/services/auth.service';
+import { authService } from "~/services/auth.service";
 
 // Login
 await authService.login({ email, password });
@@ -164,6 +164,7 @@ const user = await authService.getCurrentUser();
 ## 📡 Endpoints Disponíveis
 
 ### Auth
+
 - `POST /auth/login` - Login
 - `POST /auth/register` - Registro
 - `POST /auth/refresh` - Refresh token
@@ -171,12 +172,14 @@ const user = await authService.getCurrentUser();
 - `GET /auth/me` - Usuário atual
 
 ### Users
+
 - `GET /users?page=1&limit=10` - Listar usuários
 - `GET /users/:id` - Obter usuário
 - `PUT /users/:id` - Atualizar usuário
 - `DELETE /users/:id` - Deletar usuário
 
 ### Products
+
 - `GET /products?page=1&limit=10` - Listar produtos
 - `GET /products/:id` - Obter produto
 - `POST /products` - Criar produto
@@ -184,16 +187,19 @@ const user = await authService.getCurrentUser();
 - `DELETE /products/:id` - Deletar produto
 
 ### Integrations
+
 - Kiwify, Hotmart, Facebook, Google Ads
 - Ver `app/lib/http/endpoints.ts` para detalhes
 
 ## 🎯 Interceptors
 
 ### Request Interceptor
+
 - Adiciona token de autenticação automaticamente
 - Formato: `Authorization: Bearer <token>`
 
 ### Response Interceptor
+
 - Trata erros 401 (não autorizado)
 - Redireciona para login
 - Limpa tokens
@@ -241,9 +247,9 @@ try {
 export const API_ENDPOINTS = {
   // ... outros endpoints
   ORDERS: {
-    LIST: '/orders',
+    LIST: "/orders",
     GET: (id: string) => `/orders/${id}`,
-    CREATE: '/orders',
+    CREATE: "/orders",
   },
 };
 ```
@@ -251,14 +257,14 @@ export const API_ENDPOINTS = {
 2. Crie o serviço em `app/services/order.service.ts`:
 
 ```typescript
-import { apiClient } from '~/lib/http/api-client';
-import { API_ENDPOINTS } from '~/lib/http/endpoints';
+import { apiClient } from "~/lib/http/api-client";
+import { API_ENDPOINTS } from "~/lib/http/endpoints";
 
 export const orderService = {
   async list() {
     return apiClient.get(API_ENDPOINTS.ORDERS.LIST);
   },
-  
+
   async create(data: any) {
     return apiClient.post(API_ENDPOINTS.ORDERS.CREATE, data);
   },
@@ -268,8 +274,8 @@ export const orderService = {
 3. Use com o hook `useApi`:
 
 ```typescript
-import { useApi } from '~/hooks';
-import { orderService } from '~/services/order.service';
+import { useApi } from "~/hooks";
+import { orderService } from "~/services/order.service";
 
 const { execute: createOrder, isLoading } = useApi(orderService.create);
 ```

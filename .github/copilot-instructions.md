@@ -261,3 +261,229 @@ This project uses **Conventional Commits** with strict validation via commitlint
 ## Project Context
 
 SaaS para gestão de produtos digitais, integrações com Kiwify, Hotmart, Eduzz, Facebook Ads. Autorização RBAC. Autenticação JWT self-hosted.
+
+## Frontend Structure (React Router v7 + shadcn/ui)
+
+The frontend (`apps/web/`) follows a **strict 3-layer architecture** with clear separation of concerns:
+
+```
+apps/web/app/
+├── routes/              # PRESENTATION LAYER
+│   └── *.tsx            # Pages/Routes - ONLY UI rendering
+├── hooks/               # LOGIC LAYER
+│   └── *.ts             # Custom hooks - orchestration & state management
+├── services/            # DATA LAYER
+│   └── *.service.ts     # API calls - HTTP communication only
+├── lib/
+│   └── http/            # HTTP INFRASTRUCTURE
+│       ├── api-client.ts    # Axios instance with interceptors
+│       └── endpoints.ts     # API endpoint constants
+└── components/
+    └── ui/              # shadcn/ui components
+```
+
+### 🎯 Critical Frontend Architecture Rules
+
+**MANDATORY 3-LAYER STRUCTURE:**
+
+```
+Routes (UI) → Hooks (Logic) → Services (API)
+```
+
+#### 1. **Routes/Pages** (`app/routes/*.tsx`)
+
+**ONLY allowed:**
+
+- ✅ UI rendering (JSX/components)
+- ✅ Calling custom hooks
+- ✅ Local UI state (modals, tabs, tooltips)
+- ✅ Visual layout and styling
+
+**NEVER allowed:**
+
+- ❌ Direct API calls
+- ❌ Importing `apiClient` or services
+- ❌ Complex data transformations
+- ❌ Business logic
+
+```tsx
+// ✅ CORRECT
+export default function ProductsPage() {
+  const { products, isLoading, error } = useProducts();
+
+  return (
+    <div>
+      {products?.map((p) => (
+        <ProductCard {...p} />
+      ))}
+    </div>
+  );
+}
+
+// ❌ WRONG - calling API directly
+export default function ProductsPage() {
+  useEffect(() => {
+    apiClient.get("/products").then(setProducts); // NO!
+  }, []);
+}
+```
+
+#### 2. **Hooks** (`app/hooks/*.ts`)
+
+**ONLY allowed:**
+
+- ✅ Calling services (via `useApi` hook)
+- ✅ Managing UI-related state
+- ✅ Data transformations for presentation
+- ✅ Navigation (`useNavigate`)
+- ✅ Side effects (`useEffect`)
+
+**NEVER allowed:**
+
+- ❌ Importing `apiClient` directly
+- ❌ Direct Axios calls
+- ❌ Complex business logic (move to backend)
+
+```tsx
+// ✅ CORRECT
+import { useApi } from "./use-api";
+import { productService } from "~/services/product.service";
+
+export function useProducts() {
+  const { data, error, isLoading, execute } = useApi(productService.list);
+
+  return {
+    products: data?.data,
+    error,
+    isLoading,
+    fetchProducts: execute,
+  };
+}
+
+// ❌ WRONG - calling apiClient directly
+import { apiClient } from "~/lib/http";
+
+export function useProducts() {
+  const fetch = () => apiClient.get("/products"); // NO!
+}
+```
+
+#### 3. **Services** (`app/services/*.service.ts`)
+
+**ONLY allowed:**
+
+- ✅ Calling `apiClient` methods
+- ✅ Using `API_ENDPOINTS` constants
+- ✅ Data transformations
+- ✅ TypeScript interfaces for requests/responses
+
+**NEVER allowed:**
+
+- ❌ React hooks (`useState`, `useEffect`, etc.)
+- ❌ UI logic or navigation
+- ❌ Loading/error state management (that's for hooks)
+
+```tsx
+// ✅ CORRECT
+import { apiClient } from "~/lib/http/api-client";
+import { API_ENDPOINTS } from "~/lib/http/endpoints";
+
+export const productService = {
+  async list(page = 1, limit = 10) {
+    return apiClient.get(
+      `${API_ENDPOINTS.PRODUCTS.LIST}?page=${page}&limit=${limit}`
+    );
+  },
+};
+
+// ❌ WRONG - using React hooks
+import { useState } from "react";
+
+export const productService = {
+  list: () => {
+    const [data, setData] = useState([]); // NO! Services don't use hooks
+  },
+};
+```
+
+### 🔄 Frontend Data Flow
+
+```
+User clicks button in ROUTE
+    ↓
+ROUTE calls hook method: fetchProducts()
+    ↓
+HOOK executes service: productService.list()
+    ↓
+SERVICE calls API: apiClient.get('/products')
+    ↓
+apiClient adds auth headers & makes request
+    ↓
+Response flows back up the chain
+    ↓
+HOOK updates state (data, loading, error)
+    ↓
+ROUTE re-renders with new data
+```
+
+### 📋 Frontend Development Checklist
+
+When creating a new feature:
+
+1. **Define endpoints** in `app/lib/http/endpoints.ts`
+2. **Create service** in `app/services/*.service.ts` (API calls only)
+3. **Create hook** in `app/hooks/*.ts` (orchestration & state)
+4. **Create route** in `app/routes/*.tsx` (UI only)
+
+### 🎨 shadcn/ui Integration
+
+- **ALWAYS use shadcn/ui color system** (never hardcode Tailwind colors)
+- Use CSS variables: `bg-card`, `text-foreground`, `border-border`, etc.
+- Install components: `npx shadcn@latest add <component>`
+- Components location: `app/components/ui/`
+
+**Color System:**
+
+```tsx
+// ✅ CORRECT - using shadcn variables
+<div className="bg-card text-card-foreground border-border">
+
+// ❌ WRONG - hardcoded Tailwind colors
+<div className="bg-white text-gray-900 border-gray-200">
+```
+
+### 🔐 Authentication Pattern
+
+```tsx
+// Hook handles auth logic
+const { login, isLoginLoading, loginError } = useAuth();
+
+// Route only displays UI
+<Button onClick={() => login({ email, password })} disabled={isLoginLoading}>
+  {isLoginLoading ? <Loader /> : "Login"}
+</Button>;
+```
+
+### 📦 Frontend Dependencies
+
+- **React Router v7** for routing
+- **Axios** for HTTP requests
+- **shadcn/ui** for UI components
+- **Tailwind CSS** for styling
+- **Lucide React** for icons
+
+### 🚫 Frontend Anti-Patterns
+
+❌ **NEVER do these:**
+
+- Call APIs directly in routes/pages
+- Import `apiClient` in hooks (use services instead)
+- Use React hooks in services
+- Hardcode API URLs (use `API_ENDPOINTS`)
+- Hardcode Tailwind colors (use shadcn variables)
+- Mix business logic with UI rendering
+
+### 📚 Reference Documentation
+
+See detailed architecture guide: `.github/CODE_STRUCTURE.md`
+See HTTP client guide: `apps/web/HTTP_SERVICES.md`

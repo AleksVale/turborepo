@@ -6,7 +6,7 @@ export const loginSchema = z.object({
     .string()
     .min(1, "Senha é obrigatória")
     .min(6, "A senha deve ter no mínimo 6 caracteres"),
-  rememberMe: z.boolean().default(false),
+  rememberMe: z.boolean().optional(),
 });
 
 export type LoginFormData = z.infer<typeof loginSchema>;

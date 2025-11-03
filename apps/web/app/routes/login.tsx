@@ -21,7 +21,6 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<LoginFormData>({
-    // @ts-expect-error - zodResolver type inference issue with optional fields
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
@@ -33,9 +32,7 @@ export default function Login() {
   const handleSubmit = async (data: LoginFormData) => {
     try {
       await login({ email: data.email, password: data.password });
-    } catch (err) {
-      // Error is handled by the hook
-    }
+    } catch (err) {}
   };
 
   return (
@@ -62,7 +59,6 @@ export default function Login() {
 
           <Form {...form}>
             <form
-              // @ts-expect-error - React Hook Form type inference issue
               onSubmit={form.handleSubmit(handleSubmit)}
               className="space-y-4"
             >
@@ -73,7 +69,6 @@ export default function Login() {
               )}
 
               <FormField
-                // @ts-expect-error - Form control type inference issue
                 control={form.control}
                 name="email"
                 render={({ field }) => (
@@ -92,7 +87,6 @@ export default function Login() {
               />
 
               <FormField
-                // @ts-expect-error - Form control type inference issue
                 control={form.control}
                 name="password"
                 render={({ field }) => (
@@ -126,7 +120,6 @@ export default function Login() {
 
               <div className="flex items-center justify-between">
                 <FormField
-                  // @ts-expect-error - Form control type inference issue
                   control={form.control}
                   name="rememberMe"
                   render={({ field }) => (
